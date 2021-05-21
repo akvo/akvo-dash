@@ -374,7 +374,7 @@
                                             :imported-table-name (:imported-table-name data-group)}))
          ) {} data-groups))
 
-(defn- apply-undo-2 [{:keys [tenant-conn claims] :as deps} dataset-id job-execution-id current-dataset-version]
+(defn apply-undo-2 [{:keys [tenant-conn claims txs] :as deps} dataset-id job-execution-id current-dataset-version]
   (let [tables-dict     (->> (db.data-group/list-data-groups-by-dataset-version-id tenant-conn {:dataset-version-id (:id current-dataset-version)})
                              (copy-tables-2 tenant-conn))
         initial-dataset-version (db.transformation/initial-dataset-version-2-to-update-by-dataset-id
@@ -382,8 +382,13 @@
                                  {:dataset-id dataset-id})
         initial-data-groups     (->> (db.data-group/list-data-groups-by-dataset-version-id tenant-conn {:dataset-version-id (:id initial-dataset-version)})
                                      (map (fn [dg] (merge dg (get tables-dict (:group-id dg))))))]
+    (log/error :initial-dataset-version initial-dataset-version)
+    (log/error :initial-data-groups initial-data-groups)
+    (log/error :txs txs)
     (loop [data-groups     initial-data-groups
-           transformations (butlast (:transformations current-dataset-version))
+           transformations (if txs
+                             txs
+                             (butlast (:transformations current-dataset-version)))
            tx-index        0]
       (if (empty? transformations)
         (let [new-dataset-version-id (str (util/squuid))]
@@ -392,7 +397,10 @@
                                                                  :job-execution-id job-execution-id
                                                                  :version          (inc (:version current-dataset-version))
                                                                  :author           claims
-                                                                 :transformations  (w/keywordize-keys (vec (butlast (:transformations current-dataset-version))))})
+                                                                 :transformations  (w/keywordize-keys (vec
+                                                                                                       (if txs
+                                                                                                         txs
+                                                                                                         (butlast (:transformations current-dataset-version)))))})
           (doseq [data-group data-groups]
             (let [new-data-group-id (str (util/squuid))]
               (db.transformation/clear-data-group-data-table tenant-conn {:id (:id data-group)})

@@ -20,7 +20,7 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]))
 
-(defn- successful-execution [conn job-execution-id data-source-id dataset-id group-table-names columns {:keys [spec-name spec-description]} claims]
+(defn successful-execution [conn job-execution-id dataset-id group-table-names columns claims]
   (let [dataset-version-id (util/squuid)
         grouped-columns (group-by :groupId columns)
         ordered-groups-ids (distinct (map :groupId columns))
@@ -65,8 +65,8 @@
                                              :group-name (:groupName (first columns) group-id)
                                              :repeatable (:repeatable (first columns) false)
                                              :group-order group-order
-                                             :columns (mapv (fn [{:keys [title id type key multipleType multipleId groupName groupId hidden]}]
-                                                              {:columnName id
+                                             :columns (mapv (fn [{:keys [title id columnName type key multipleType multipleId groupName groupId hidden]}]
+                                                              {:columnName (or id columnName)
                                                                :direction nil
                                                                :groupId groupId
                                                                :groupName groupName
@@ -100,6 +100,6 @@
           (let [table-name (get group-table-names groupId)]
             (jdbc/insert-multi! conn table-name (mapv postgres/coerce-to-sql iterations)))))
       (postgres/create-data-group-foreign-keys conn group-table-names)
-      (successful-execution conn job-execution-id  data-source-id dataset-id
-                            group-table-names columns {:spec-name        (get spec "name")
-                                                       :spec-description (get spec "description" "")} claims))))
+      (successful-execution conn job-execution-id dataset-id group-table-names columns claims))))
+
+

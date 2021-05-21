@@ -106,6 +106,23 @@
                    {:dataset-name dataset-name
                     :kind "clj-flow"
                     :data (i-c/flow-sample-imported-dataset groups submissions)})))
+
+(defn new-csv-dataset
+  ([dataset-name ]
+   (new-csv-dataset dataset-name [:text :number :date] 2))
+  ([dataset-name column-types submissions]
+   (tu/import-file (db-conn)
+                   (:akvo.lumen.utils.local-error-tracker/local system)
+                   {:dataset-name dataset-name
+                    :kind "clj"
+                    :data (i-c/csv-sample-imported-dataset column-types submissions)})))
+
+(defn isystem []
+  system)
+
+(defn jwt-token []
+  "xxx")
+
 (defn flags []
   (env/all-values (db-conn)))
 

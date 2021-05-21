@@ -51,11 +51,14 @@
                  [iapetos "0.1.8" :exclusions [io.prometheus/simpleclient]]
                  [io.prometheus/simpleclient_hotspot "0.6.0"]
                  [io.prometheus/simpleclient_dropwizard "0.6.0"]
-                 [org.clojure/test.check "0.10.0-alpha3"]]
+                 [org.clojure/test.check "0.10.0-alpha3"]
+                 [amazonica "0.3.156"]
+                 [org.clojure/data.xml "0.0.8"]
+                 ]
   :source-paths   ["src" "specs"]
   :uberjar-name "akvo-lumen.jar"
   :repl-options {:timeout 120000}
-  :pedantic? :abort
+;  :pedantic? :abort
   :plugins [[lein-ancient "0.6.15"]
             [lein-codox "0.9.6"]
             [lein-environ "1.0.3"]

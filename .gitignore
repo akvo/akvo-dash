@@ -8,6 +8,9 @@ client/dist
 client/yarn.lock
 notify.slack.sh
 
+# postgres local db folder
+db/*.sql
+
 # docker-compose
 .env
 

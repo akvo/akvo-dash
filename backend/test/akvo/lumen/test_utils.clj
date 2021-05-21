@@ -84,6 +84,7 @@
                          {"path" (when file (.getAbsolutePath (io/file (io/resource file))))
                           "kind" (or kind "DATA_FILE")
                           "fileName" (or dataset-name file)
+                          "email" "lumen-dev@akvo.org"
                           "hasColumnHeaders" (boolean has-column-headers?)}
                          {:data data})}
         [tag {:strs [importId]}] (import/handle tenant-conn {} error-tracker test-claims spec)]
