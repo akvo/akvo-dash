@@ -28,17 +28,18 @@
     }
 
     td, th {
-        border: 0.1rem solid $midGrey;
+        border: 1px solid $lightGrey;
         padding: 0.25rem;
     }
 
     td.cell {
+        padding: 10px;
         text-align: right;
         vertical-align: bottom;
     }
 
     .categoryColumnTitle, .rowColumnTitle {
-        background-color: $lightBlueGrey;
+        background-color: $white;
     }
 
     .uniqueColumnValue {
@@ -49,6 +50,7 @@
     }
 
     .uniqueRowValue {
+        padding: 10px;
         span {
             display: block;
             line-height: 1.4em;
@@ -61,9 +63,9 @@
     }
 
     .title th {
-        background-color: $white;
         line-height: 2em;
         border: none;
+        padding-bottom: 10px;
     }
 
     .chartMeta {
