@@ -38,10 +38,10 @@ function Dataset(props) {
   // const useDataGroups = maybeUseDataGroups !== null ? JSON.parse(maybeUseDataGroups) : true;
   window.localStorage.removeItem('useDataGroups');
   const useDataGroups = true;
-
   const dataset = useSelector(
     state => state.library.datasets[props.params.datasetId]
   );
+
 
   const [title, setTitle] = useState(dataset ? getTitle(dataset) : '');
 
@@ -299,6 +299,8 @@ function Dataset(props) {
     return <LoadingSpinner />;
   }
 
+  const dataGroups = dataset.get('groups');
+
   return (
     <NavigationPrompt
       shouldPrompt={pendingSaving.savingFailed}
@@ -314,7 +316,7 @@ function Dataset(props) {
             columns={currentGroup ? currentGroup.get('columns') : null}
             rows={currentGroup ? currentGroup.get('rows') : null}
             rowsCount={rowsCount}
-            groups={dataset.get('groups') ? dataset.get('groups').filter(group => group.get(1).size) : null}
+            groups={dataGroups ? dataGroups.filter(group => group.get(1).size) : null}
             Header={DatasetHeader}
             headerProps={{
               onShowDatasetSettings,
@@ -336,7 +338,7 @@ function Dataset(props) {
             onTransform={onTransform}
             onUndoTransformation={onUndoTransformation}
             onNavigateToVisualise={onNavigateToVisualise}
-            datasetGroupsAvailable={dataset.get('groups') != null}
+            datasetGroupsAvailable={dataGroups != null}
             groupAvailable={!!currentGroup}
             handleChangeQuestionGroup={onChangeQuestionGroup}
             dataSourceKind={dataset.getIn(['source', 'kind'])}

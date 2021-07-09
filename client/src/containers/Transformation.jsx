@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-underscore-dangle */
 // TODO dataset not fetched if navigate straight to page
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -25,6 +27,7 @@ class Transformation extends Component {
 
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       loading: true,
       transforming: false,
@@ -32,14 +35,19 @@ class Transformation extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(ensureLibraryLoaded())
+    this._isMounted = true;
+    this._isMounted && this.props.dispatch(ensureLibraryLoaded())
       .then(() => this.setState({ loading: false }));
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   handleApplyTransformation(transformation) {
     trackEvent(TRANSFORM_DATASET, transformation.op);
     const { dispatch, datasetId, history } = this.props;
-    this.setState({ transforming: true });
+    this._isMounted && this.setState({ transforming: true });
     dispatch(showNotification('info', 'Applying transformation...'));
 
     dispatch(startTx(datasetId));
@@ -50,14 +58,14 @@ class Transformation extends Component {
           throw new Error('Failed to merge dataset');
         } else {
           dispatch(pollTxImportStatus(response.body.jobExecutionId, () => {
-            this.setState({ transforming: false });
+            this._isMounted && this.setState({ transforming: false });
             dispatch(showNotification('info', 'Transformation success', true));
             history.push(`/dataset/${datasetId}`);
             dispatch(endTx(datasetId));
           }));
         }
       }).catch((err) => {
-        this.setState({ transforming: false });
+        this._isMounted && this.setState({ transforming: false });
         dispatch(showNotification('error', `Transformation failed: ${err.message}`));
         const DONT_SHOW_SUCCESS_NOTIF = false;
         dispatch(endTx(datasetId, DONT_SHOW_SUCCESS_NOTIF));

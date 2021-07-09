@@ -756,7 +756,6 @@ export function pollTxImportStatus(jobExecutionId, callback = () => {}, isFeatur
           dispatch(endTx(datasetId, DONT_SHOW_SUCCESS_NOTIF));
         } else if (status === 'OK') {
           dispatch(txDatasetSuccess(datasetId, jobExecutionId));
-          dispatch(isFeatureFlag ? fetchDatasetGroups(datasetId) : fetchDataset(datasetId));
           callback();
         }
       })
